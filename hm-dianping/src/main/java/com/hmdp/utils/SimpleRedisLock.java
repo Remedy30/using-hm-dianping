@@ -37,25 +37,26 @@ public class SimpleRedisLock implements ILock {
         return Boolean.TRUE.equals(success);
     }
 
-//    @Override
-//    public void unlock() {
-//        // 调用lua脚本
-//        stringRedisTemplate.execute(
-//                UNLOCK_SCRIPT,
-//                Collections.singletonList(KEY_PREFIX + name),
-//                ID_PREFIX + Thread.currentThread().getId());
-//    }
-
     @Override
     public void unlock() {
-        // 获取线程标示
-        String threadId = ID_PREFIX + Thread.currentThread().getId();
-        // 获取锁中的标示
-        String id = stringRedisTemplate.opsForValue().get(KEY_PREFIX + name);
-        // 判断标示是否一致
-        if(threadId.equals(id)) {
-            // 释放锁
-            stringRedisTemplate.delete(KEY_PREFIX + name);
-        }
+        // 调用lua脚本
+        stringRedisTemplate.execute(
+                UNLOCK_SCRIPT,
+                Collections.singletonList(KEY_PREFIX + name),
+                ID_PREFIX + Thread.currentThread().getId());
     }
+
+
+//    @Override
+//    public void unlock() {
+//        // 获取线程标示
+//        String threadId = ID_PREFIX + Thread.currentThread().getId();
+//        // 获取锁中的标示
+//        String id = stringRedisTemplate.opsForValue().get(KEY_PREFIX + name);
+//        // 判断标示是否一致
+//        if(threadId.equals(id)) {
+//            // 释放锁
+//            stringRedisTemplate.delete(KEY_PREFIX + name);
+//        }
+//    }
 }
